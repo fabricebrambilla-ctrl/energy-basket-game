@@ -107,9 +107,9 @@ export default {
         },
         "fall-slow": {
           "0%": { transform: "translateY(-20px)", opacity: "0" },
-          "10%": { opacity: "1" },
+          "5%": { opacity: "1" },
           "90%": { opacity: "1" },
-          "100%": { transform: "translateY(250px)", opacity: "0" },
+          "100%": { transform: "translateY(280px)", opacity: "0" },
         },
         shake: {
           "0%, 100%": { transform: "translateX(0) scale(1)" },
@@ -146,7 +146,7 @@ export default {
         float: "float 3s ease-in-out infinite",
         "bounce-in": "bounce-in 0.5s ease-out",
         "score-pop": "score-pop 0.6s ease-out forwards",
-        "fall-slow": "fall-slow 5s linear forwards",
+        "fall-slow": "fall-slow 12s linear forwards",
         shake: "shake 0.6s ease-in-out",
         wiggle: "wiggle 0.5s ease-in-out infinite",
         "pulse-big": "pulse-big 0.5s ease-in-out",

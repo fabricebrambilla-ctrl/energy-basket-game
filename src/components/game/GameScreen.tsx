@@ -40,21 +40,17 @@ export function GameScreen({ onGameEnd }: GameScreenProps) {
     })
   );
 
-  // Spawn new foods continuously
+  // Spawn new foods continuously - always maintain 2 on screen
   useEffect(() => {
     if (currentIndex >= TOTAL_FOODS) return;
     
     const isFastMode = sortedCount >= SPEED_INCREASE_AT;
     const maxActive = isFastMode ? 3 : 2;
-    const spawnDelay = isFastMode ? 1500 : 2500;
     
     if (activeFoods.length < maxActive && currentIndex < TOTAL_FOODS) {
-      const timer = setTimeout(() => {
-        const newFood = foods[currentIndex];
-        setActiveFoods(prev => [...prev, newFood]);
-        setCurrentIndex(prev => prev + 1);
-      }, activeFoods.length === 0 ? 0 : spawnDelay);
-      return () => clearTimeout(timer);
+      const newFood = foods[currentIndex];
+      setActiveFoods(prev => [...prev, newFood]);
+      setCurrentIndex(prev => prev + 1);
     }
   }, [currentIndex, sortedCount, foods, activeFoods.length]);
 
