@@ -24,7 +24,7 @@ export function Basket({ type, glowState, onGlowEnd }: BasketProps) {
       const timer = setTimeout(() => {
         setIsAnimating(false);
         onGlowEnd();
-      }, 400);
+      }, 800);
       return () => clearTimeout(timer);
     }
   }, [glowState, onGlowEnd]);
@@ -37,7 +37,7 @@ export function Basket({ type, glowState, onGlowEnd }: BasketProps) {
     : 'bg-secondary border-secondary/30';
 
   const glowClasses = 
-    glowState === 'correct' ? 'glow-correct' : 
+    glowState === 'correct' ? 'glow-correct animate-celebrate' : 
     glowState === 'wrong' ? 'glow-wrong animate-shake' : '';
 
   return (
@@ -47,14 +47,13 @@ export function Basket({ type, glowState, onGlowEnd }: BasketProps) {
         relative flex flex-col items-center justify-center
         w-36 h-36 md:w-44 md:h-44
         rounded-3xl border-4 basket-shadow
-        transition-all duration-200
+        transition-all duration-300
         ${baseClasses}
         ${isOver ? 'scale-110 brightness-110' : ''}
         ${glowClasses}
-        ${isAnimating && glowState === 'wrong' ? 'animate-shake' : ''}
       `}
     >
-      <Icon className="w-12 h-12 md:w-16 md:h-16 text-white/90 mb-2" />
+      <Icon className={`w-12 h-12 md:w-16 md:h-16 text-white/90 mb-2 transition-transform duration-300 ${isAnimating && glowState === 'correct' ? 'scale-125' : ''}`} />
       <span className="text-white font-bold text-sm md:text-base text-center px-2">
         {isLow ? '🟢 Low Energy' : '🔴 High Energy'}
       </span>
@@ -62,6 +61,13 @@ export function Basket({ type, glowState, onGlowEnd }: BasketProps) {
       {/* Hover indicator */}
       {isOver && (
         <div className="absolute inset-0 bg-white/20 rounded-3xl animate-pulse" />
+      )}
+      
+      {/* Feedback overlay */}
+      {isAnimating && (
+        <div className={`absolute inset-0 rounded-3xl pointer-events-none ${
+          glowState === 'correct' ? 'bg-success/20' : 'bg-destructive/20'
+        }`} />
       )}
     </div>
   );
