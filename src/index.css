@@ -96,16 +96,20 @@ All colors MUST be HSL.
   
   .glow-correct {
     box-shadow: 
-      0 0 20px hsl(var(--glow-correct) / 0.6),
-      0 0 40px hsl(var(--glow-correct) / 0.4),
-      0 0 60px hsl(var(--glow-correct) / 0.2);
+      0 0 30px hsl(var(--glow-correct) / 0.8),
+      0 0 60px hsl(var(--glow-correct) / 0.6),
+      0 0 100px hsl(var(--glow-correct) / 0.4),
+      inset 0 0 30px hsl(var(--glow-correct) / 0.3);
+    border-color: hsl(var(--glow-correct)) !important;
   }
   
   .glow-wrong {
     box-shadow: 
-      0 0 20px hsl(var(--glow-wrong) / 0.6),
-      0 0 40px hsl(var(--glow-wrong) / 0.4),
-      0 0 60px hsl(var(--glow-wrong) / 0.2);
+      0 0 30px hsl(var(--glow-wrong) / 0.8),
+      0 0 60px hsl(var(--glow-wrong) / 0.6),
+      0 0 100px hsl(var(--glow-wrong) / 0.4),
+      inset 0 0 30px hsl(var(--glow-wrong) / 0.3);
+    border-color: hsl(var(--glow-wrong)) !important;
   }
 }
 

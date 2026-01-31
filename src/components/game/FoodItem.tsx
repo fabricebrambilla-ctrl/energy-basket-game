@@ -1,22 +1,45 @@
 import { Food } from '@/data/foods';
 import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
+import { useEffect, useState } from 'react';
 
 interface FoodItemProps {
   food: Food;
   index: number;
+  onExpire?: (foodId: number) => void;
 }
 
-export function FoodItem({ food, index }: FoodItemProps) {
+export function FoodItem({ food, index, onExpire }: FoodItemProps) {
+  const [timeLeft, setTimeLeft] = useState(5);
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: `food-${food.id}`,
     data: food,
   });
 
+  // Countdown timer
+  useEffect(() => {
+    if (isDragging) return;
+    
+    const interval = setInterval(() => {
+      setTimeLeft(prev => {
+        if (prev <= 1) {
+          onExpire?.(food.id);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    
+    return () => clearInterval(interval);
+  }, [food.id, onExpire, isDragging]);
+
   const style = {
-    transform: CSS.Translate.toString(transform),
-    animationDelay: `${index * 0.15}s`,
+    transform: isDragging ? CSS.Translate.toString(transform) : undefined,
+    animationDelay: `${index * 0.3}s`,
+    animationPlayState: isDragging ? 'paused' : 'running',
   };
+
+  const urgencyColor = timeLeft <= 2 ? 'text-secondary' : 'text-muted-foreground';
 
   return (
     <div
@@ -25,19 +48,23 @@ export function FoodItem({ food, index }: FoodItemProps) {
       {...listeners}
       {...attributes}
       className={`
-        animate-fall cursor-grab active:cursor-grabbing
+        animate-fall-slow cursor-grab active:cursor-grabbing
         bg-food-bg rounded-2xl p-4 food-shadow
         flex flex-col items-center justify-center gap-2
-        min-w-[100px] min-h-[100px]
+        min-w-[110px] min-h-[110px]
         select-none touch-none
-        transition-all duration-200
+        transition-transform duration-200
         hover:scale-105
-        ${isDragging ? 'opacity-80 scale-110 z-50 rotate-3' : ''}
+        ${isDragging ? 'opacity-90 scale-110 z-50 rotate-3 !animate-none' : ''}
+        ${timeLeft <= 2 ? 'ring-2 ring-secondary ring-opacity-50' : ''}
       `}
     >
       <span className="text-5xl">{food.emoji}</span>
       <span className="text-sm font-bold text-foreground text-center leading-tight">
         {food.name}
+      </span>
+      <span className={`text-xs font-semibold ${urgencyColor}`}>
+        {timeLeft}s
       </span>
     </div>
   );
