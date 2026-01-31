@@ -10,7 +10,7 @@ interface FoodItemProps {
 }
 
 export function FoodItem({ food, index, onExpire }: FoodItemProps) {
-  const [timeLeft, setTimeLeft] = useState(12);
+  const [timeLeft, setTimeLeft] = useState(20);
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: `food-${food.id}`,
     data: food,
