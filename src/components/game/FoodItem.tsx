@@ -36,8 +36,6 @@ export function FoodItem({ food, index, fallDuration, onExpire }: FoodItemProps)
 
   const style = {
     transform: isDragging ? CSS.Translate.toString(transform) : undefined,
-    animationDelay: `${index * 0.3}s`,
-    animationPlayState: isDragging ? 'paused' : 'running',
   };
 
   const urgencyColor = timeLeft <= 2 ? 'text-secondary' : 'text-muted-foreground';

@@ -160,6 +160,23 @@ All colors MUST be HSL.
   }
 }
 
+@keyframes fall-slow {
+  0% {
+    transform: translateY(-120px);
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+  }
+  95% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(calc(100vh - 250px));
+    opacity: 0;
+  }
+}
+
 @keyframes fall {
   from {
     transform: translateY(-100px);
