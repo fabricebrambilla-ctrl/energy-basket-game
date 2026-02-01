@@ -106,10 +106,10 @@ export default {
           "100%": { transform: "scale(1) translateY(-20px)", opacity: "0" },
         },
         "fall-slow": {
-          "0%": { transform: "translateY(-200px)", opacity: "0" },
-          "3%": { opacity: "1" },
-          "95%": { opacity: "1" },
-          "100%": { transform: "translateY(350px)", opacity: "0" },
+          "0%": { transform: "translateY(-100%)", opacity: "0" },
+          "2%": { opacity: "1" },
+          "98%": { opacity: "1" },
+          "100%": { transform: "translateY(calc(100vh - 200px))", opacity: "0" },
         },
         shake: {
           "0%, 100%": { transform: "translateX(0) scale(1)" },

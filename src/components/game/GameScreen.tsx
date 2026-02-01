@@ -40,19 +40,32 @@ export function GameScreen({ onGameEnd }: GameScreenProps) {
     })
   );
 
-  // Spawn new foods continuously - always maintain 2 on screen
+  // Spawn first food immediately
+  useEffect(() => {
+    if (currentIndex === 0 && activeFoods.length === 0 && foods.length > 0) {
+      setActiveFoods([foods[0]]);
+      setCurrentIndex(1);
+    }
+  }, [currentIndex, activeFoods.length, foods]);
+
+  // Spawn new foods at intervals - every 10 seconds (halfway through the 20s fall)
   useEffect(() => {
     if (currentIndex >= TOTAL_FOODS) return;
+    if (currentIndex === 0) return; // Wait for first food
     
     const isFastMode = sortedCount >= SPEED_INCREASE_AT;
-    const maxActive = isFastMode ? 3 : 2;
+    const spawnInterval = isFastMode ? 7000 : 10000; // 10s normally, 7s in fast mode
     
-    if (activeFoods.length < maxActive && currentIndex < TOTAL_FOODS) {
-      const newFood = foods[currentIndex];
-      setActiveFoods(prev => [...prev, newFood]);
-      setCurrentIndex(prev => prev + 1);
-    }
-  }, [currentIndex, sortedCount, foods, activeFoods.length]);
+    const timer = setInterval(() => {
+      if (currentIndex < TOTAL_FOODS) {
+        const newFood = foods[currentIndex];
+        setActiveFoods(prev => [...prev, newFood]);
+        setCurrentIndex(prev => prev + 1);
+      }
+    }, spawnInterval);
+    
+    return () => clearInterval(timer);
+  }, [currentIndex, sortedCount, foods]);
 
   // Handle food expiration (missed foods)
   const handleFoodExpire = useCallback((foodId: number) => {
@@ -125,14 +138,16 @@ export function GameScreen({ onGameEnd }: GameScreenProps) {
       <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
         <div className="flex-1 flex flex-col items-center justify-between p-6 pb-8">
           {/* Food Drop Zone */}
-          <div className="flex-1 flex items-center justify-center gap-6 flex-wrap max-w-xl">
+          <div className="flex-1 w-full relative overflow-hidden">
             {activeFoods.map((food, index) => (
-              <FoodItem key={food.id} food={food} index={index} onExpire={handleFoodExpire} />
+              <FoodItem key={food.id} food={food} index={index % 3} onExpire={handleFoodExpire} />
             ))}
             
             {activeFoods.length === 0 && currentIndex >= TOTAL_FOODS && (
-              <div className="text-muted-foreground text-lg font-medium animate-pulse">
-                Finishing up...
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="text-muted-foreground text-lg font-medium animate-pulse">
+                  Finishing up...
+                </div>
               </div>
             )}
           </div>
