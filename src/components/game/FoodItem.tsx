@@ -36,22 +36,20 @@ export function FoodItem({ food, index, fallDuration, onExpire }: FoodItemProps)
 
   const urgencyColor = timeLeft <= 2 ? 'text-secondary' : 'text-muted-foreground';
 
-  // When dragging, use fixed positioning so it follows cursor properly
-  const dragStyle: React.CSSProperties = isDragging
-    ? {
-        position: 'fixed',
-        left: 0,
-        top: 0,
-        transform: CSS.Translate.toString(transform),
-        zIndex: 9999,
-        pointerEvents: 'none',
-      }
-    : {
-        position: 'absolute',
-        top: 0,
-        left: `${15 + (index * 30)}%`,
-        animation: `fall-slow ${fallDuration}s linear forwards`,
-      };
+  // Calculate horizontal position based on index
+  const leftPosition = `${15 + (index * 30)}%`;
+
+  // When dragging, apply transform offset while keeping element in flow
+  const dragStyle: React.CSSProperties = {
+    position: 'absolute',
+    top: 0,
+    left: leftPosition,
+    animation: isDragging ? 'none' : `fall-slow ${fallDuration}s linear forwards`,
+    animationPlayState: isDragging ? 'paused' : 'running',
+    transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
+    zIndex: isDragging ? 9999 : 1,
+    cursor: isDragging ? 'grabbing' : 'grab',
+  };
 
   return (
     <div
