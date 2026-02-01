@@ -44,19 +44,25 @@ export function FoodItem({ food, index, onExpire }: FoodItemProps) {
   return (
     <div
       ref={setNodeRef}
-      style={style}
+      style={{
+        ...style,
+        position: 'absolute',
+        top: 0,
+        left: `${20 + (index * 30)}%`,
+        animation: isDragging ? 'none' : 'fall-slow 20s linear forwards',
+      }}
       {...listeners}
       {...attributes}
       className={`
-        animate-fall-slow cursor-grab active:cursor-grabbing
+        cursor-grab active:cursor-grabbing
         bg-food-bg rounded-2xl p-4 food-shadow
         flex flex-col items-center justify-center gap-2
         min-w-[110px] min-h-[110px]
         select-none touch-none
         transition-transform duration-200
         hover:scale-105
-        ${isDragging ? 'opacity-90 scale-110 z-50 rotate-3 !animate-none' : ''}
-        ${timeLeft <= 2 ? 'ring-2 ring-secondary ring-opacity-50' : ''}
+        ${isDragging ? 'opacity-90 scale-110 z-50 rotate-3' : ''}
+        ${timeLeft <= 5 ? 'ring-2 ring-secondary ring-opacity-50' : ''}
       `}
     >
       <span className="text-5xl">{food.emoji}</span>
