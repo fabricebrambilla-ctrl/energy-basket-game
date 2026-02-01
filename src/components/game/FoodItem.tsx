@@ -34,22 +34,29 @@ export function FoodItem({ food, index, fallDuration, onExpire }: FoodItemProps)
     return () => clearInterval(interval);
   }, [food.id, onExpire, isDragging]);
 
-  const style = {
-    transform: isDragging ? CSS.Translate.toString(transform) : undefined,
-  };
-
   const urgencyColor = timeLeft <= 2 ? 'text-secondary' : 'text-muted-foreground';
+
+  // When dragging, use fixed positioning so it follows cursor properly
+  const dragStyle: React.CSSProperties = isDragging
+    ? {
+        position: 'fixed',
+        left: 0,
+        top: 0,
+        transform: CSS.Translate.toString(transform),
+        zIndex: 9999,
+        pointerEvents: 'none',
+      }
+    : {
+        position: 'absolute',
+        top: 0,
+        left: `${15 + (index * 30)}%`,
+        animation: `fall-slow ${fallDuration}s linear forwards`,
+      };
 
   return (
     <div
       ref={setNodeRef}
-      style={{
-        ...style,
-        position: 'absolute',
-        top: 0,
-        left: `${15 + (index * 30)}%`,
-        animation: isDragging ? 'none' : `fall-slow ${fallDuration}s linear forwards`,
-      }}
+      style={dragStyle}
       {...listeners}
       {...attributes}
       className={`
@@ -58,9 +65,9 @@ export function FoodItem({ food, index, fallDuration, onExpire }: FoodItemProps)
         flex flex-col items-center justify-center gap-2
         min-w-[110px] min-h-[110px]
         select-none touch-none
-        transition-transform duration-200
+        transition-shadow duration-200
         hover:scale-105
-        ${isDragging ? 'opacity-90 scale-110 z-50 rotate-3' : ''}
+        ${isDragging ? 'opacity-100 scale-110 shadow-2xl ring-4 ring-primary/50' : ''}
         ${timeLeft <= 5 ? 'ring-2 ring-secondary ring-opacity-50' : ''}
       `}
     >
