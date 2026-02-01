@@ -125,6 +125,55 @@ export const allFoods: Food[] = [
 ];
 
 export function getRandomFoods(count: number): Food[] {
-  const shuffled = [...allFoods].sort(() => Math.random() - 0.5);
-  return shuffled.slice(0, count);
+  // Separate low and high energy foods
+  const lowEnergy = allFoods.filter(f => !f.isHighEnergy);
+  const highEnergy = allFoods.filter(f => f.isHighEnergy);
+  
+  // Shuffle each category
+  const shuffledLow = [...lowEnergy].sort(() => Math.random() - 0.5);
+  const shuffledHigh = [...highEnergy].sort(() => Math.random() - 0.5);
+  
+  // Alternate between low and high energy foods
+  const result: Food[] = [];
+  const halfCount = Math.ceil(count / 2);
+  
+  for (let i = 0; i < halfCount; i++) {
+    if (i < shuffledLow.length && result.length < count) {
+      result.push(shuffledLow[i]);
+    }
+    if (i < shuffledHigh.length && result.length < count) {
+      result.push(shuffledHigh[i]);
+    }
+  }
+  
+  // Shuffle the final result to mix them up but maintain roughly even distribution
+  // Use a controlled shuffle that prevents more than 2 of the same type in a row
+  const balanced: Food[] = [];
+  let lastType: boolean | null = null;
+  let sameTypeCount = 0;
+  
+  while (result.length > 0) {
+    // Find candidates that won't create 3 in a row
+    const candidates = result.filter(f => {
+      if (lastType === null || sameTypeCount < 2) return true;
+      return f.isHighEnergy !== lastType;
+    });
+    
+    // Pick random from candidates (or from all if no valid candidates)
+    const pool = candidates.length > 0 ? candidates : result;
+    const randomIndex = Math.floor(Math.random() * pool.length);
+    const picked = pool[randomIndex];
+    
+    balanced.push(picked);
+    result.splice(result.indexOf(picked), 1);
+    
+    if (picked.isHighEnergy === lastType) {
+      sameTypeCount++;
+    } else {
+      lastType = picked.isHighEnergy;
+      sameTypeCount = 1;
+    }
+  }
+  
+  return balanced;
 }
