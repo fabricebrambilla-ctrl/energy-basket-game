@@ -40,32 +40,23 @@ export function GameScreen({ onGameEnd }: GameScreenProps) {
     })
   );
 
-  // Spawn first food immediately
+  const isFastMode = sortedCount >= SPEED_INCREASE_AT;
+  const fallDuration = isFastMode ? 5 : 10;
+
+  // Always maintain 3 foods on screen
   useEffect(() => {
-    if (currentIndex === 0 && activeFoods.length === 0 && foods.length > 0) {
-      setActiveFoods([foods[0]]);
-      setCurrentIndex(1);
+    const TARGET_ACTIVE = 3;
+    
+    if (currentIndex >= TOTAL_FOODS) return;
+    
+    const foodsToSpawn = Math.min(TARGET_ACTIVE - activeFoods.length, TOTAL_FOODS - currentIndex);
+    
+    if (foodsToSpawn > 0) {
+      const newFoods = foods.slice(currentIndex, currentIndex + foodsToSpawn);
+      setActiveFoods(prev => [...prev, ...newFoods]);
+      setCurrentIndex(prev => prev + foodsToSpawn);
     }
   }, [currentIndex, activeFoods.length, foods]);
-
-  // Spawn new foods at intervals - every 10 seconds (halfway through the 20s fall)
-  useEffect(() => {
-    if (currentIndex >= TOTAL_FOODS) return;
-    if (currentIndex === 0) return; // Wait for first food
-    
-    const isFastMode = sortedCount >= SPEED_INCREASE_AT;
-    const spawnInterval = isFastMode ? 7000 : 10000; // 10s normally, 7s in fast mode
-    
-    const timer = setInterval(() => {
-      if (currentIndex < TOTAL_FOODS) {
-        const newFood = foods[currentIndex];
-        setActiveFoods(prev => [...prev, newFood]);
-        setCurrentIndex(prev => prev + 1);
-      }
-    }, spawnInterval);
-    
-    return () => clearInterval(timer);
-  }, [currentIndex, sortedCount, foods]);
 
   // Handle food expiration (missed foods)
   const handleFoodExpire = useCallback((foodId: number) => {
@@ -119,8 +110,6 @@ export function GameScreen({ onGameEnd }: GameScreenProps) {
     });
   }, [score, correctCount, onGameEnd]);
 
-  const isFastMode = sortedCount >= SPEED_INCREASE_AT;
-
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-background to-muted">
       {/* Header */}
@@ -140,7 +129,7 @@ export function GameScreen({ onGameEnd }: GameScreenProps) {
           {/* Food Drop Zone */}
           <div className="flex-1 w-full relative overflow-hidden">
             {activeFoods.map((food, index) => (
-              <FoodItem key={food.id} food={food} index={index % 3} onExpire={handleFoodExpire} />
+              <FoodItem key={food.id} food={food} index={index % 3} fallDuration={fallDuration} onExpire={handleFoodExpire} />
             ))}
             
             {activeFoods.length === 0 && currentIndex >= TOTAL_FOODS && (

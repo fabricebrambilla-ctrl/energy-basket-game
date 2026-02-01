@@ -6,11 +6,12 @@ import { useEffect, useState } from 'react';
 interface FoodItemProps {
   food: Food;
   index: number;
+  fallDuration: number;
   onExpire?: (foodId: number) => void;
 }
 
-export function FoodItem({ food, index, onExpire }: FoodItemProps) {
-  const [timeLeft, setTimeLeft] = useState(20);
+export function FoodItem({ food, index, fallDuration, onExpire }: FoodItemProps) {
+  const [timeLeft, setTimeLeft] = useState(fallDuration);
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: `food-${food.id}`,
     data: food,
@@ -48,8 +49,8 @@ export function FoodItem({ food, index, onExpire }: FoodItemProps) {
         ...style,
         position: 'absolute',
         top: 0,
-        left: `${20 + (index * 30)}%`,
-        animation: isDragging ? 'none' : 'fall-slow 20s linear forwards',
+        left: `${15 + (index * 30)}%`,
+        animation: isDragging ? 'none' : `fall-slow ${fallDuration}s linear forwards`,
       }}
       {...listeners}
       {...attributes}
