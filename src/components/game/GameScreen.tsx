@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { DndContext, DragEndEvent, DragStartEvent, DragOverlay, PointerSensor, useSensor, useSensors, TouchSensor } from '@dnd-kit/core';
+import { snapCenterToCursor } from '@dnd-kit/modifiers';
 import { Food, getRandomFoods } from '@/data/foods';
 import { FoodItem, DragOverlayItem } from './FoodItem';
 import { Basket } from './Basket';
@@ -215,8 +216,8 @@ export function GameScreen({ onGameEnd }: GameScreenProps) {
           </div>
         </div>
 
-        {/* Drag Overlay - follows cursor exactly */}
-        <DragOverlay dropAnimation={null}>
+        {/* Drag Overlay - follows cursor exactly, always centered */}
+        <DragOverlay dropAnimation={null} modifiers={[snapCenterToCursor]}>
           {activeFood ? <DragOverlayItem food={activeFood} /> : null}
         </DragOverlay>
       </DndContext>
