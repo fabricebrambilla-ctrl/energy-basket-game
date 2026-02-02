@@ -10,6 +10,7 @@ const lowEnergyFoods: Omit<Food, 'id' | 'isHighEnergy'>[] = [
   { name: 'Banana', emoji: '🍌' },
   { name: 'Orange', emoji: '🍊' },
   { name: 'Pear', emoji: '🍐' },
+  { name: 'Peach', emoji: '🍑' },
   { name: 'Strawberry', emoji: '🍓' },
   { name: 'Blueberries', emoji: '🫐' },
   { name: 'Grapes', emoji: '🍇' },
@@ -28,9 +29,10 @@ const lowEnergyFoods: Omit<Food, 'id' | 'isHighEnergy'>[] = [
   { name: 'Cauliflower', emoji: '🥦' },
   { name: 'Peas', emoji: '🫛' },
   { name: 'Corn', emoji: '🌽' },
-  { name: 'Beans', emoji: '🫘' },
+  { name: 'Green beans', emoji: '🫛' },
   { name: 'Lentils', emoji: '🫘' },
   { name: 'Chickpeas', emoji: '🫘' },
+  { name: 'Black beans', emoji: '🫘' },
   { name: 'Rice', emoji: '🍚' },
   { name: 'Pasta', emoji: '🍝' },
   { name: 'Bread', emoji: '🍞' },
@@ -40,20 +42,18 @@ const lowEnergyFoods: Omit<Food, 'id' | 'isHighEnergy'>[] = [
   { name: 'Couscous', emoji: '🍚' },
   { name: 'Flour', emoji: '🌾' },
   { name: 'Tofu', emoji: '🧈' },
-  { name: 'Nuts', emoji: '🥜' },
-  { name: 'Seeds', emoji: '🌻' },
-  { name: 'Peanut butter', emoji: '🥜' },
-  { name: 'Olive oil', emoji: '🫒' },
+  { name: 'Peanuts', emoji: '🥜' },
+  { name: 'Sunflower seeds', emoji: '🌻' },
+  { name: 'Pumpkin seeds', emoji: '🎃' },
+  { name: 'Applesauce', emoji: '🍎' },
   { name: 'Vegetable soup', emoji: '🥣' },
   { name: 'Salad', emoji: '🥗' },
-  { name: 'Applesauce', emoji: '🍎' },
-  { name: 'Mashed potatoes', emoji: '🥔' },
   { name: 'Popcorn', emoji: '🍿' },
-  { name: 'Jam', emoji: '🍓' },
   { name: 'Tomato sauce', emoji: '🍅' },
-  { name: 'Vegetable stir-fry', emoji: '🥬' },
-  { name: 'Fruit smoothie', emoji: '🥤' },
+  { name: 'Mashed potatoes', emoji: '🥔' },
   { name: 'Baked vegetables', emoji: '🥕' },
+  { name: 'Vegetable stir-fry', emoji: '🥬' },
+  { name: 'Fruit salad', emoji: '🍓' },
   { name: 'Vegetable wrap', emoji: '🌯' },
   { name: 'Bean stew', emoji: '🍲' },
 ];
@@ -62,12 +62,14 @@ const highEnergyFoods: Omit<Food, 'id' | 'isHighEnergy'>[] = [
   { name: 'Beef', emoji: '🥩' },
   { name: 'Steak', emoji: '🥩' },
   { name: 'Burger', emoji: '🍔' },
+  { name: 'Cheeseburger', emoji: '🍔' },
   { name: 'Lamb', emoji: '🍖' },
   { name: 'Pork', emoji: '🥓' },
   { name: 'Bacon', emoji: '🥓' },
   { name: 'Sausage', emoji: '🌭' },
   { name: 'Ham', emoji: '🍖' },
   { name: 'Chicken', emoji: '🍗' },
+  { name: 'Fried chicken', emoji: '🍗' },
   { name: 'Chicken nuggets', emoji: '🍗' },
   { name: 'Turkey', emoji: '🦃' },
   { name: 'Duck', emoji: '🦆' },
@@ -86,14 +88,11 @@ const highEnergyFoods: Omit<Food, 'id' | 'isHighEnergy'>[] = [
   { name: 'Pizza', emoji: '🍕' },
   { name: 'Lasagna', emoji: '🍝' },
   { name: 'Hot dog', emoji: '🌭' },
-  { name: 'Fried chicken', emoji: '🍗' },
-  { name: 'Cheeseburger', emoji: '🍔' },
+  { name: 'Meatballs', emoji: '🍖' },
+  { name: 'Kebab', emoji: '🍢' },
   { name: 'Pepperoni', emoji: '🍕' },
   { name: 'Salami', emoji: '🥓' },
   { name: 'Fish sticks', emoji: '🐟' },
-  { name: 'Meatballs', emoji: '🍖' },
-  { name: 'Kebab', emoji: '🍢' },
-  { name: 'Fried eggs', emoji: '🍳' },
   { name: 'Omelette', emoji: '🍳' },
   { name: 'Pancakes', emoji: '🥞' },
   { name: 'Chocolate', emoji: '🍫' },
@@ -103,12 +102,13 @@ const highEnergyFoods: Omit<Food, 'id' | 'isHighEnergy'>[] = [
   { name: 'Donut', emoji: '🍩' },
   { name: 'Milkshake', emoji: '🥤' },
   { name: 'Frozen meals', emoji: '🍱' },
+  { name: 'Frozen pizza', emoji: '🍕' },
   { name: 'Ready-made meals', emoji: '🍱' },
-  { name: 'Fast food fries', emoji: '🍟' },
+  { name: 'Fast-food fries', emoji: '🍟' },
   { name: 'Processed sandwiches', emoji: '🥪' },
   { name: 'Packaged snacks', emoji: '🍿' },
   { name: 'Instant noodles', emoji: '🍜' },
-  { name: 'Frozen pizza', emoji: '🍕' },
+  { name: 'Microwave meals', emoji: '🍱' },
 ];
 
 export const allFoods: Food[] = [
@@ -133,7 +133,7 @@ export function getRandomFoods(count: number): Food[] {
   const shuffledLow = [...lowEnergy].sort(() => Math.random() - 0.5);
   const shuffledHigh = [...highEnergy].sort(() => Math.random() - 0.5);
   
-  // Alternate between low and high energy foods
+  // Alternate between low and high energy foods to get an even mix
   const result: Food[] = [];
   const halfCount = Math.ceil(count / 2);
   
@@ -146,8 +146,8 @@ export function getRandomFoods(count: number): Food[] {
     }
   }
   
-  // Shuffle the final result to mix them up but maintain roughly even distribution
-  // Use a controlled shuffle that prevents more than 2 of the same type in a row
+  // Shuffle the final result with a controlled algorithm
+  // that prevents more than 2 of the same type in a row
   const balanced: Food[] = [];
   let lastType: boolean | null = null;
   let sameTypeCount = 0;
