@@ -1,5 +1,5 @@
-import { useState, useCallback, useEffect } from 'react';
-import { DndContext, DragEndEvent, DragStartEvent, DragOverlay, PointerSensor, useSensor, useSensors, TouchSensor } from '@dnd-kit/core';
+import { useState, useCallback, useRef } from 'react';
+import { DndContext, DragEndEvent, DragStartEvent, DragOverlay, PointerSensor, useSensor, useSensors, TouchSensor, MeasuringStrategy } from '@dnd-kit/core';
 import { snapCenterToCursor } from '@dnd-kit/modifiers';
 import { Food, getRandomFoods } from '@/data/foods';
 import { FoodItem, DragOverlayItem } from './FoodItem';
@@ -18,13 +18,11 @@ interface GameScreenProps {
   onGameEnd: (score: number, correctCount: number) => void;
 }
 
-interface LaneState {
-  food: Food | null;
-  nextIndex: number;
-}
-
 export function GameScreen({ onGameEnd }: GameScreenProps) {
-  const [foods] = useState<Food[]>(() => getRandomFoods(TOTAL_FOODS));
+  // Generate all foods once and use a queue
+  const foodQueueRef = useRef<Food[]>(getRandomFoods(TOTAL_FOODS));
+  const nextIndexRef = useRef(NUM_LANES); // Track next food to spawn globally
+  
   const [score, setScore] = useState(0);
   const [correctCount, setCorrectCount] = useState(0);
   const [sortedCount, setSortedCount] = useState(0);
@@ -34,58 +32,65 @@ export function GameScreen({ onGameEnd }: GameScreenProps) {
   const [activeFood, setActiveFood] = useState<Food | null>(null);
   const [isFastMode, setIsFastMode] = useState(false);
   
-  // Lane-based state: each lane has its own food and tracks which index to spawn next
-  const [lanes, setLanes] = useState<LaneState[]>(() => {
-    // Initialize lanes with first 3 foods
-    return Array.from({ length: NUM_LANES }, (_, i) => ({
-      food: i < foods.length ? foods[i] : null,
-      nextIndex: NUM_LANES + i, // Each lane will pull from every 3rd item
-    }));
+  // Each lane holds one food (or null if empty)
+  const [lanes, setLanes] = useState<(Food | null)[]>(() => {
+    return foodQueueRef.current.slice(0, NUM_LANES);
   });
 
+  // More responsive sensors for fast movements
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 8,
+        distance: 3, // Reduced from 8 for faster activation
       },
     }),
     useSensor(TouchSensor, {
       activationConstraint: {
-        delay: 100,
-        tolerance: 5,
+        delay: 50, // Reduced from 100
+        tolerance: 8, // Increased tolerance
       },
     })
   );
 
   const fallDuration = isFastMode ? 5 : 10;
 
-  // Spawn next food in a specific lane
+  // Spawn next food in a specific lane from the global queue
   const spawnInLane = useCallback((laneIndex: number) => {
-    setLanes(prev => {
-      const lane = prev[laneIndex];
-      // Find next available food for this lane
-      let nextFood: Food | null = null;
-      let newNextIndex = lane.nextIndex;
-      
-      // Look for next available food
-      while (newNextIndex < TOTAL_FOODS && !nextFood) {
-        nextFood = foods[newNextIndex];
-        newNextIndex++;
-      }
-      
-      const newLanes = [...prev];
-      newLanes[laneIndex] = {
-        food: nextFood,
-        nextIndex: newNextIndex,
-      };
-      return newLanes;
-    });
-  }, [foods]);
+    const nextIdx = nextIndexRef.current;
+    if (nextIdx < TOTAL_FOODS) {
+      const nextFood = foodQueueRef.current[nextIdx];
+      nextIndexRef.current = nextIdx + 1;
+      setLanes(prev => {
+        const newLanes = [...prev];
+        newLanes[laneIndex] = nextFood;
+        return newLanes;
+      });
+    } else {
+      // No more foods to spawn
+      setLanes(prev => {
+        const newLanes = [...prev];
+        newLanes[laneIndex] = null;
+        return newLanes;
+      });
+    }
+  }, []);
 
   // Handle food expiration (missed foods)
   const handleFoodExpire = useCallback((foodId: number, lane: number) => {
-    setScore(prev => prev - 5);
-    setLastChange({ amount: -5, timestamp: Date.now() });
+    // Clear the lane first to prevent duplicate processing
+    setLanes(prev => {
+      if (prev[lane]?.id !== foodId) return prev; // Already processed
+      const newLanes = [...prev];
+      newLanes[lane] = null;
+      return newLanes;
+    });
+    
+    setScore(prev => {
+      const newScore = prev - 5;
+      setLastChange({ amount: -5, timestamp: Date.now() });
+      return newScore;
+    });
+    
     setSortedCount(prev => {
       const newCount = prev + 1;
       if (newCount >= TOTAL_FOODS) {
@@ -93,7 +98,9 @@ export function GameScreen({ onGameEnd }: GameScreenProps) {
       }
       return newCount;
     });
-    spawnInLane(lane);
+    
+    // Spawn new food after a small delay
+    setTimeout(() => spawnInLane(lane), 100);
   }, [score, correctCount, onGameEnd, spawnInLane]);
 
   const handleDragStart = useCallback((event: DragStartEvent) => {
@@ -109,6 +116,15 @@ export function GameScreen({ onGameEnd }: GameScreenProps) {
     
     const droppedFood = active.data.current as Food & { lane: number };
     const lane = droppedFood.lane;
+    
+    // Verify the food is still in this lane (not already processed)
+    setLanes(prev => {
+      if (prev[lane]?.id !== droppedFood.id) return prev; // Already processed
+      const newLanes = [...prev];
+      newLanes[lane] = null;
+      return newLanes;
+    });
+    
     const basketType = over.id === 'basket-low' ? 'low' : 'high';
     
     const isCorrect = 
@@ -139,7 +155,7 @@ export function GameScreen({ onGameEnd }: GameScreenProps) {
     });
     
     // Spawn new food in the same lane
-    spawnInLane(lane);
+    setTimeout(() => spawnInLane(lane), 100);
   }, [score, correctCount, onGameEnd, spawnInLane]);
 
   const handleDragCancel = useCallback(() => {
@@ -169,15 +185,20 @@ export function GameScreen({ onGameEnd }: GameScreenProps) {
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
         onDragCancel={handleDragCancel}
+        measuring={{
+          droppable: {
+            strategy: MeasuringStrategy.Always,
+          },
+        }}
       >
         <div className="flex-1 flex flex-col items-center justify-between p-6 pb-8">
           {/* Food Drop Zone */}
           <div className="flex-1 w-full relative overflow-hidden">
-            {lanes.map((lane, laneIndex) => (
-              lane.food && (
+            {lanes.map((food, laneIndex) => (
+              food && (
                 <FoodItem 
-                  key={`${lane.food.id}-${laneIndex}`} 
-                  food={lane.food} 
+                  key={`${food.id}-lane-${laneIndex}`} 
+                  food={food} 
                   lane={laneIndex} 
                   fallDuration={fallDuration} 
                   onExpire={handleFoodExpire} 
@@ -185,7 +206,7 @@ export function GameScreen({ onGameEnd }: GameScreenProps) {
               )
             ))}
             
-            {lanes.every(lane => !lane.food) && sortedCount >= TOTAL_FOODS && (
+            {lanes.every(food => !food) && sortedCount >= TOTAL_FOODS && (
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="text-muted-foreground text-lg font-medium animate-pulse">
                   Finishing up...
