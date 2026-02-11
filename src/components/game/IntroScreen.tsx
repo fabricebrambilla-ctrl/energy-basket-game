@@ -36,21 +36,22 @@ export function IntroScreen({ onStart }: IntroScreenProps) {
           </p>
           
           <div className="bg-secondary/10 rounded-xl p-4 border-l-4 border-secondary">
-            <p className="text-foreground font-bold">
+            <p className="text-foreground/90 text-base leading-relaxed">
               When high-energy food is thrown away, all that energy is wasted too.
               When we waste food, we also waste water, land, and energy.
             </p>
           </div>
-          
-          <div className="text-lg leading-relaxed text-foreground space-y-2">
-            <p className="font-bold">RULES</p>
-            <ul className="list-disc list-inside space-y-1 text-base">
-              <li>Catch the falling food items and place each item in the correct basket.</li>
-              <li>+10 points for every correct basket.</li>
-              <li>−5 points for every wrong basket.</li>
-              <li>The food drops faster over time.</li>
-              <li>Aim to get the highest score! Good Luck!</li>
-            </ul>
+
+          {/* Rules */}
+          <div className="space-y-3">
+            <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Rules</h3>
+            <div className="grid gap-2 text-[15px] text-foreground/85">
+              <p>🎯 Catch the falling food and place each item in the correct basket.</p>
+              <p>✅ <span className="text-primary font-medium">+10 points</span> for every correct basket.</p>
+              <p>❌ <span className="text-secondary font-medium">−5 points</span> for every wrong basket.</p>
+              <p>⏩ The food drops faster over time.</p>
+              <p>🏆 Aim for the highest score — good luck!</p>
+            </div>
           </div>
         </div>
 
@@ -81,12 +82,7 @@ export function IntroScreen({ onStart }: IntroScreenProps) {
           </Button>
         </div>
 
-        {/* Rules */}
-        <div className="text-center text-muted-foreground text-sm space-y-1">
-          <p>✅ Correct = <strong className="text-primary">+10 points</strong></p>
-          <p>❌ Wrong = <strong className="text-secondary">-5 points</strong></p>
-          <p>🎯 25 foods to sort!</p>
-        </div>
+        <p className="text-center text-muted-foreground text-sm">🎯 25 foods to sort!</p>
       </div>
     </div>
   );
