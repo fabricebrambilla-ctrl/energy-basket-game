@@ -36,16 +36,22 @@ export function IntroScreen({ onStart }: IntroScreenProps) {
           </p>
           
           <div className="bg-secondary/10 rounded-xl p-4 border-l-4 border-secondary">
-            <p className="text-foreground font-medium">
+            <p className="text-foreground font-bold">
               When high-energy food is thrown away, all that energy is wasted too.
               When we waste food, we also waste water, land, and energy.
             </p>
           </div>
           
-          <p className="text-lg leading-relaxed text-foreground">
-            Put each food in the basket you think is right.
-            <span className="font-bold"> Saving high-energy food helps the planet</span> 🌍
-          </p>
+          <div className="text-lg leading-relaxed text-foreground space-y-2">
+            <p className="font-bold">RULES</p>
+            <ul className="list-disc list-inside space-y-1 text-base">
+              <li>Catch the falling food items and place each item in the correct basket.</li>
+              <li>+10 points for every correct basket.</li>
+              <li>−5 points for every wrong basket.</li>
+              <li>The food drops faster over time.</li>
+              <li>Aim to get the highest score! Good Luck!</li>
+            </ul>
+          </div>
         </div>
 
         {/* Baskets Preview */}
