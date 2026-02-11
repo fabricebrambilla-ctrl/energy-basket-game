@@ -66,21 +66,6 @@ export function IntroScreen({ onStart }: IntroScreenProps) {
           </div>
         </div>
 
-        {/* Baskets Preview */}
-        <div className="flex justify-center gap-8 py-4">
-          <div className="flex flex-col items-center gap-2">
-            <div className="w-20 h-20 rounded-2xl bg-primary flex items-center justify-center basket-shadow">
-              <Leaf className="w-10 h-10 text-primary-foreground" />
-            </div>
-            <span className="font-bold text-primary text-sm">Low Energy</span>
-          </div>
-          <div className="flex flex-col items-center gap-2">
-            <div className="w-20 h-20 rounded-2xl bg-secondary flex items-center justify-center basket-shadow">
-              <Zap className="w-10 h-10 text-secondary-foreground" />
-            </div>
-            <span className="font-bold text-secondary text-sm">High Energy</span>
-          </div>
-        </div>
 
         {/* Start Button */}
         <div className="flex justify-center pt-4">
