@@ -27,18 +27,29 @@ export function IntroScreen({ onStart }: IntroScreenProps) {
         {/* Info Card */}
         <div className="bg-card rounded-2xl p-6 md:p-8 food-shadow space-y-5">
           <p className="text-lg leading-relaxed text-foreground">
-            Some foods take <strong className="text-secondary">a lot of energy</strong> to make.
-            Other foods take <strong className="text-primary">less energy</strong> to make.
+            Some foods need <strong className="text-secondary">a lot of energy</strong> to make.
+          </p>
+
+          <p className="text-lg leading-relaxed text-foreground">
+            Other foods need <strong className="text-primary">less energy</strong>.
           </p>
           
           <p className="text-lg leading-relaxed text-foreground">
-            Energy is used to grow food, feed animals, move food, and keep food cold.
+            Energy is used to grow plants, feed animals, move food to stores, and keep it cold and fresh.
           </p>
           
           <div className="bg-secondary/10 rounded-xl p-4 border-l-4 border-secondary">
             <p className="text-foreground/90 text-base leading-relaxed">
-              When high-energy food is thrown away, all that energy is wasted too.
-              When we waste food, we also waste water, land, and energy.
+              When we throw food away, we waste all that energy too.
+            </p>
+            <p className="text-foreground/90 text-base leading-relaxed mt-2">
+              We also waste water and land that were used to make it.
+            </p>
+          </div>
+
+          <div className="bg-primary/5 rounded-xl p-4 border-l-4 border-primary">
+            <p className="text-foreground text-base leading-relaxed">
+              🌱 If we choose and eat more low-energy foods, we can help save energy and protect the environment!
             </p>
           </div>
 
